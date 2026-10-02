@@ -1,1 +1,2 @@
 - [Next.js package firewall](next-package-firewall.md) — when a pinned release is blocked, check the latest version and retry without bypassing the firewall.
+- [Masahatna access choice](masahatna-access-choice.md) — keep the app without sign-in and leave Firestore rules unchanged unless the user asks again.
