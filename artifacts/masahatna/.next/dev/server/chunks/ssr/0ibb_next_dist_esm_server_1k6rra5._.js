@@ -7919,7 +7919,7 @@ if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
 ;
 else {
     try {
-        api = __turbopack_context__.r("[externals]/next/dist/compiled/@opentelemetry/api [external] (next/dist/compiled/@opentelemetry/api, cjs)");
+        api = __turbopack_context__.r("[project]/node_modules/.pnpm/@opentelemetry+api@1.9.1/node_modules/@opentelemetry/api/build/esm/index.js [app-rsc] (ecmascript)");
     } catch (err) {
         api = __turbopack_context__.r("[project]/node_modules/.pnpm/next@16.3.8_@types+node@25.9.6_react-dom@19.1.0_react@19.1.0__react@19.1.0/node_modules/next/dist/compiled/@opentelemetry/api/index.js [app-rsc] (ecmascript)");
     }
