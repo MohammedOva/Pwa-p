@@ -1,0 +1,22 @@
+1:"$Sreact.fragment"
+2:I[40171,["/_next/static/chunks/02xiy_6k4dl9n.js","/_next/static/chunks/0g_7q1bqxgjk3.js"],"CoupleApp"]
+3:I[90504,["/_next/static/chunks/02xiy_6k4dl9n.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+8:I[90504,["/_next/static/chunks/02xiy_6k4dl9n.js"],"ViewportBoundary"]
+9:I[90504,["/_next/static/chunks/02xiy_6k4dl9n.js"],"MetadataBoundary"]
+a:I[48501,["/_next/static/chunks/02xiy_6k4dl9n.js"],"IconMark"]
+c:I[55379,["/_next/static/chunks/02xiy_6k4dl9n.js"],"default"]
+d:I[45348,["/_next/static/chunks/02xiy_6k4dl9n.js"],"default"]
+e:I[18087,["/_next/static/chunks/02xiy_6k4dl9n.js"],"PwaInstall"]
+f:I[36577,["/_next/static/chunks/02xiy_6k4dl9n.js"],"Analytics"]
+:HL["/_next/static/chunks/30hanja531jjl.css","style"]
+7:X
+0:{"buildId":"XVB3rBfA4lqDqYdEy9pWs","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/_next/static/chunks/0g_7q1bqxgjk3.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":"$@6","staleTime":"$7","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$L8",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#f3ece1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L9",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"مساحتنا — يوميات مشتركة"}],["$","meta","1",{"name":"description","content":"دفتر يوميات مشترك للثنائي: المزاج والطاقة، المهام المشتركة، الرسائل، ومعرض الذكريات."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest"}],["$","meta","3",{"name":"generator","content":"v0.app"}],["$","meta","4",{"name":"format-detection","content":"telephone=no"}],["$","meta","5",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","6",{"name":"apple-mobile-web-app-title","content":"مساحتنا"}],["$","meta","7",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","link","8",{"rel":"icon","href":"/icon-light-32x32.png","media":"(prefers-color-scheme: light)"}],["$","link","9",{"rel":"icon","href":"/icon-dark-32x32.png","media":"(prefers-color-scheme: dark)"}],["$","link","10",{"rel":"icon","href":"/icon.svg","type":"image/svg+xml"}],["$","link","11",{"rel":"apple-touch-icon","href":"/apple-icon.png"}],["$","$La","12",{}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":"$@b","staleTime":"$7","varyParams":null},{"rsc":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/30hanja531jjl.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/02xiy_6k4dl9n.js","async":true}]],["$","html",null,{"lang":"ar","dir":"rtl","data-theme":"paper","className":"ibm_plex_sans_arabic_9792266c-module__gh0MgW__variable reem_kufi_c7fdb364-module__ulTPEq__variable scroll-smooth scroll-pt-20","children":["$","body",null,{"className":"antialiased","children":[["$","$Lc",null,{"parallelRouterKey":"children","template":["$","$Ld",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}],["$","$Le",null,{}],["$","$Lf",null,{}]]}]}]]}],"isPartial":"$@10","staleTime":"$7","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@11","rootVaryParams":null,"needsRuntimeRequest":"$@12"}
+5:null
+7:300
+12:true
+7:C
+11:0
+b:"$undefined"
+10:"$undefined"
+6:"$undefined"

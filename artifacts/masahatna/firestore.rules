@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // There's no login system in this app, so anyone with the Firebase config
+    // could technically read/write this one document. That's an accepted
+    // trade-off for a private two-person app, but don't reuse this project
+    // for anything more sensitive without adding real authentication.
+    match /couples/main {
+      allow read, write: if true;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

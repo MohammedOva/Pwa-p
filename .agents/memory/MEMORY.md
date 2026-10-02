@@ -1,0 +1,1 @@
+- [Next.js package firewall](next-package-firewall.md) — when a pinned release is blocked, check the latest version and retry without bypassing the firewall.

@@ -1,0 +1,209 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-plex), system-ui, sans-serif;
+  --font-display: var(--font-kufi), var(--font-plex), sans-serif;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-partner-a: var(--partner-a);
+  --color-partner-b: var(--partner-b);
+  --color-highlight: var(--highlight);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Paper — warm journal (default) */
+:root,
+[data-theme='paper'] {
+  color-scheme: light;
+  --background: #f3ece1;
+  --foreground: #2a211b;
+  --card: #fbf7f0;
+  --card-foreground: #2a211b;
+  --popover: #fbf7f0;
+  --popover-foreground: #2a211b;
+  --primary: #2a211b;
+  --primary-foreground: #fbf7f0;
+  --secondary: #ebe1d2;
+  --secondary-foreground: #2a211b;
+  --muted: #ebe1d2;
+  --muted-foreground: #76665a;
+  --accent: #ebe1d2;
+  --accent-foreground: #2a211b;
+  --destructive: #b3412f;
+  --border: #dccfbc;
+  --input: #dccfbc;
+  --ring: #2a211b;
+  --partner-a: #35577d;
+  --partner-b: #c2553f;
+  --highlight: #e0a93b;
+  --radius: 1rem;
+}
+
+[data-theme='night'] {
+  color-scheme: dark;
+  --background: #131519;
+  --foreground: #efe8dd;
+  --card: #1b1e24;
+  --card-foreground: #efe8dd;
+  --popover: #1b1e24;
+  --popover-foreground: #efe8dd;
+  --primary: #efe8dd;
+  --primary-foreground: #131519;
+  --secondary: #252932;
+  --secondary-foreground: #efe8dd;
+  --muted: #252932;
+  --muted-foreground: #9b988f;
+  --accent: #252932;
+  --accent-foreground: #efe8dd;
+  --destructive: #f07a66;
+  --border: #2c313b;
+  --input: #2c313b;
+  --ring: #efe8dd;
+  --partner-a: #8fb4e6;
+  --partner-b: #f19c86;
+  --highlight: #f0c765;
+}
+
+[data-theme='sea'] {
+  color-scheme: light;
+  --background: #e5edee;
+  --foreground: #11303a;
+  --card: #f5f9f9;
+  --card-foreground: #11303a;
+  --popover: #f5f9f9;
+  --popover-foreground: #11303a;
+  --primary: #11303a;
+  --primary-foreground: #f5f9f9;
+  --secondary: #d5e2e4;
+  --secondary-foreground: #11303a;
+  --muted: #d5e2e4;
+  --muted-foreground: #587078;
+  --accent: #d5e2e4;
+  --accent-foreground: #11303a;
+  --destructive: #b3412f;
+  --border: #c5d6d9;
+  --input: #c5d6d9;
+  --ring: #11303a;
+  --partner-a: #1d6a86;
+  --partner-b: #d86a4f;
+  --highlight: #e3a93a;
+}
+
+[data-theme='dusk'] {
+  color-scheme: dark;
+  --background: #25171f;
+  --foreground: #f6e6dc;
+  --card: #2f1f29;
+  --card-foreground: #f6e6dc;
+  --popover: #2f1f29;
+  --popover-foreground: #f6e6dc;
+  --primary: #f6e6dc;
+  --primary-foreground: #25171f;
+  --secondary: #3b2833;
+  --secondary-foreground: #f6e6dc;
+  --muted: #3b2833;
+  --muted-foreground: #b69c9f;
+  --accent: #3b2833;
+  --accent-foreground: #f6e6dc;
+  --destructive: #f07a66;
+  --border: #463240;
+  --input: #463240;
+  --ring: #f6e6dc;
+  --partner-a: #f2b36a;
+  --partner-b: #f27d86;
+  --highlight: #f6d27a;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: var(--app-font-size, 16px);
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+}
+
+@layer components {
+  .paper-grain {
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--foreground) 7%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 18px 18px;
+  }
+
+  .energy-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to left,
+      var(--partner-b),
+      var(--highlight),
+      var(--partner-a)
+    );
+    cursor: pointer;
+  }
+  .energy-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 9999px;
+    background: var(--card);
+    border: 3px solid var(--foreground);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+  }
+  .energy-range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: var(--card);
+    border: 3px solid var(--foreground);
+  }
+  .energy-range:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+  }
+
+  dialog.settings-dialog::backdrop {
+    background: rgb(0 0 0 / 0.45);
+    backdrop-filter: blur(4px);
+  }
+}
