@@ -1,0 +1,10 @@
+packages:
+  - .
+
+minimumReleaseAge: 1440
+
+allowBuilds:
+  protobufjs: true
+
+onlyBuiltDependencies:
+  - protobufjs
