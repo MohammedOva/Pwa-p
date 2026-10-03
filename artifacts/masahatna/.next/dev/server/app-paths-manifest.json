@@ -1,4 +1,6 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/manifest.webmanifest/route": "app/manifest.webmanifest/route.js",
   "/notification-diagnostics/route": "app/notification-diagnostics/route.js",
   "/page": "app/page.js"
 }
