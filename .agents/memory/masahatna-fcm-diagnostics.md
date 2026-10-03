@@ -7,4 +7,4 @@ Successful `notifyOnAction` logs prove an existing FCM token was accepted by the
 
 **Why:** Firebase logs showed successful sends while the unresolved failure occurred before the client registered its token. A test request to `/api/*` reached the Express API server and returned 404 instead of reaching Next.js.
 
-**How to apply:** When FCM activation fails, first inspect function send logs, then capture the browser failure stage/code in the web workflow logs using a non-`/api` endpoint. Preserve Firestore rules unless the user explicitly authorizes a change.
+**How to apply:** The user confirmed the current notification activation works. If it regresses, inspect function send logs, then capture the browser failure stage/code in the web workflow logs using a non-`/api` endpoint. Preserve Firestore rules unless the user explicitly authorizes a change.
