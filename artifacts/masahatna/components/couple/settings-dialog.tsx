@@ -137,7 +137,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
           <button
             type="button"
             onClick={enableNotifications}
-            disabled={notificationsEnabled || !notificationsSupported}
+            disabled={!notificationsSupported}
             className={cn(
               'w-full rounded-2xl border p-3 text-sm font-medium transition-colors',
               notificationsEnabled
@@ -146,13 +146,13 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             )}
           >
             {notificationsEnabled
-              ? `✓ الإشعارات مفعّلة على هذا الجهاز (${currentUser})`
+              ? `✓ رمز الإشعارات محفوظ لـ ${currentUser} — اضغط للتجديد`
               : notificationsSupported
                 ? 'تفعيل إشعارات هذا الجهاز'
                 : 'الإشعارات غير مدعومة على هذا المتصفح'}
           </button>
           <p className="mt-2 text-xs text-muted-foreground">
-            فعّلها من جوال كل شريك على حدة عشان توصل له إشعارات أفعال الثاني.
+            فعّلها من جوال كل شريك على حدة. اضغط مجددًا لتحديث الرمز إذا لم تصل الإشعارات.
           </p>
         </fieldset>
 

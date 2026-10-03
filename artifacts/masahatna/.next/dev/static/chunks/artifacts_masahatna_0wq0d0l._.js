@@ -1433,9 +1433,9 @@ function SettingsDialog({ open, onClose }) {
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                             type: "button",
                             onClick: enableNotifications,
-                            disabled: notificationsEnabled || !notificationsSupported,
+                            disabled: !notificationsSupported,
                             className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$artifacts$2f$masahatna$2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('w-full rounded-2xl border p-3 text-sm font-medium transition-colors', notificationsEnabled ? 'border-border bg-muted text-muted-foreground' : 'border-foreground hover:bg-muted'),
-                            children: notificationsEnabled ? `✓ الإشعارات مفعّلة على هذا الجهاز (${currentUser})` : notificationsSupported ? 'تفعيل إشعارات هذا الجهاز' : 'الإشعارات غير مدعومة على هذا المتصفح'
+                            children: notificationsEnabled ? `✓ رمز الإشعارات محفوظ لـ ${currentUser} — اضغط للتجديد` : notificationsSupported ? 'تفعيل إشعارات هذا الجهاز' : 'الإشعارات غير مدعومة على هذا المتصفح'
                         }, void 0, false, {
                             fileName: "[project]/artifacts/masahatna/components/couple/settings-dialog.tsx",
                             lineNumber: 137,
@@ -1443,7 +1443,7 @@ function SettingsDialog({ open, onClose }) {
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                             className: "mt-2 text-xs text-muted-foreground",
-                            children: "فعّلها من جوال كل شريك على حدة عشان توصل له إشعارات أفعال الثاني."
+                            children: "فعّلها من جوال كل شريك على حدة. اضغط مجددًا لتحديث الرمز إذا لم تصل الإشعارات."
                         }, void 0, false, {
                             fileName: "[project]/artifacts/masahatna/components/couple/settings-dialog.tsx",
                             lineNumber: 154,
@@ -2247,6 +2247,10 @@ function makeLastAction(by, title, body) {
         body
     };
 }
+function getErrorCode(error) {
+    if (typeof error !== 'object' || error === null || !('code' in error)) return undefined;
+    return typeof error.code === 'string' ? error.code : undefined;
+}
 function CoupleProvider({ children }) {
     _s();
     const [currentUser, setCurrentUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('Moe');
@@ -2301,7 +2305,6 @@ function CoupleProvider({ children }) {
                     });
                     if (Array.isArray(parsed.activities)) setActivities(parsed.activities);
                     if (Array.isArray(parsed.messages)) setMessages(parsed.messages);
-                    if (parsed.tokens) setTokens(parsed.tokens);
                 }
             } catch  {}
             setHydrated(true);
@@ -2377,11 +2380,12 @@ function CoupleProvider({ children }) {
         "CoupleProvider.useEffect": ()=>{
             if (!hydrated) return;
             try {
+                // Device tokens must only come from Firestore; local cache can otherwise
+                // make an unsaved or stale token look like notifications are enabled.
                 const data = {
                     moods,
                     activities,
-                    messages,
-                    tokens
+                    messages
                 };
                 localStorage.setItem(DATA_KEY, JSON.stringify(data));
             } catch  {}
@@ -2390,7 +2394,6 @@ function CoupleProvider({ children }) {
         moods,
         activities,
         messages,
-        tokens,
         hydrated
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -2484,18 +2487,29 @@ function CoupleProvider({ children }) {
     ]);
     const enableNotifications = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "CoupleProvider.useCallback[enableNotifications]": async ()=>{
-            const messaging = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$artifacts$2f$masahatna$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getMessagingIfSupported"])();
-            if (!messaging) {
-                notify('الإشعارات غير مدعومة على هذا المتصفح');
+            if (typeof window.Notification === 'undefined' || !('serviceWorker' in navigator) || !window.isSecureContext) {
+                notify('الإشعارات تحتاج متصفحًا يدعمها واتصالًا آمنًا');
+                return;
+            }
+            if (window.top !== window.self) {
+                notify('افتح مساحتنا في تبويب مستقل ثم أعد تفعيل الإشعارات');
                 return;
             }
             try {
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') {
-                    notify('ما تم السماح بالإشعارات');
+                    notify(permission === 'denied' ? 'إشعارات هذا الموقع محظورة في إعدادات المتصفح. اسمح بها ثم أعد المحاولة' : 'لم تسمح للمتصفح بإرسال الإشعارات');
                     return;
                 }
-                const registration = await navigator.serviceWorker.getRegistration('/') ?? await navigator.serviceWorker.register('/sw.js');
+                const messaging = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$artifacts$2f$masahatna$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getMessagingIfSupported"])();
+                if (!messaging) {
+                    notify('خدمة الإشعارات غير متاحة في هذا المتصفح');
+                    return;
+                }
+                const registration = await navigator.serviceWorker.register('/sw.js', {
+                    scope: '/'
+                });
+                await navigator.serviceWorker.ready;
                 const token = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f40$firebase$2b$messaging$40$0$2e$12$2e$12_$40$firebase$2b$app$40$0$2e$10$2e$13$2f$node_modules$2f40$firebase$2f$messaging$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getToken"])(messaging, {
                     vapidKey: __TURBOPACK__imported__module__$5b$project$5d2f$artifacts$2f$masahatna$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["VAPID_KEY"],
                     serviceWorkerRegistration: registration
@@ -2504,22 +2518,38 @@ function CoupleProvider({ children }) {
                     notify('تعذر تفعيل الإشعارات، حاول مرة ثانية');
                     return;
                 }
+                const partner = stateRef.current.currentUser;
                 const nextTokens = {
                     ...stateRef.current.tokens,
-                    [stateRef.current.currentUser]: token
+                    [partner]: token
+                };
+                await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f40$firebase$2b$firestore$40$4$2e$7$2e$3_$40$firebase$2b$app$40$0$2e$10$2e$13$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(docRef, {
+                    tokens: nextTokens
+                }, {
+                    merge: true
+                });
+                stateRef.current = {
+                    ...stateRef.current,
+                    tokens: nextTokens
                 };
                 setTokens(nextTokens);
-                push({
-                    tokens: nextTokens
-                });
                 notify('تم تفعيل الإشعارات على هذا الجهاز');
-            } catch  {
-                notify('صار خطأ أثناء تفعيل الإشعارات');
+            } catch (error) {
+                console.error('Notification activation failed:', error);
+                const code = getErrorCode(error);
+                if (code?.startsWith('firestore/')) {
+                    notify('تم إنشاء رمز الإشعارات لكن تعذر حفظه في مساحة المزامنة. تحقق من الاتصال ثم أعد المحاولة');
+                } else if (code?.includes('service-worker')) {
+                    notify('تعذر تثبيت خدمة الإشعارات. افتح التطبيق في تبويب مستقل ثم أعد المحاولة');
+                } else if (code?.startsWith('messaging/')) {
+                    notify(`تعذر تسجيل هذا الجهاز لدى Firebase (${code})`);
+                } else {
+                    notify('تعذر تفعيل الإشعارات. أعد المحاولة؛ سُجّل سبب الخطأ في سجل المتصفح');
+                }
             }
         }
     }["CoupleProvider.useCallback[enableNotifications]"], [
-        notify,
-        push
+        notify
     ]);
     const value = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "CoupleProvider.useMemo[value]": ()=>({
@@ -2717,7 +2747,7 @@ function CoupleProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/artifacts/masahatna/lib/couple-store.tsx",
-        lineNumber: 425,
+        lineNumber: 459,
         columnNumber: 10
     }, this);
 }

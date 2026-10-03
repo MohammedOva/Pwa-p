@@ -113,6 +113,11 @@ function makeLastAction(by: Partner, title: string, body: string): NonNullable<L
   return { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, by, title, body }
 }
 
+function getErrorCode(error: unknown): string | undefined {
+  if (typeof error !== 'object' || error === null || !('code' in error)) return undefined
+  return typeof error.code === 'string' ? error.code : undefined
+}
+
 export function CoupleProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<Partner>('Moe')
   const [moods, setMoods] = useState<Record<Partner, MoodEntry>>(DEFAULT_MOODS)
@@ -148,7 +153,6 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
         if (parsed.moods) setMoods({ ...DEFAULT_MOODS, ...parsed.moods })
         if (Array.isArray(parsed.activities)) setActivities(parsed.activities)
         if (Array.isArray(parsed.messages)) setMessages(parsed.messages)
-        if (parsed.tokens) setTokens(parsed.tokens)
       }
     } catch {}
     setHydrated(true)
@@ -201,10 +205,12 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated) return
     try {
-      const data: PersistedData = { moods, activities, messages, tokens }
+      // Device tokens must only come from Firestore; local cache can otherwise
+      // make an unsaved or stale token look like notifications are enabled.
+      const data: PersistedData = { moods, activities, messages }
       localStorage.setItem(DATA_KEY, JSON.stringify(data))
     } catch {}
-  }, [moods, activities, messages, tokens, hydrated])
+  }, [moods, activities, messages, hydrated])
 
   useEffect(() => {
     getMessagingIfSupported()
@@ -266,33 +272,61 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
   }, [notify])
 
   const enableNotifications = useCallback(async () => {
-    const messaging = await getMessagingIfSupported()
-    if (!messaging) {
-      notify('الإشعارات غير مدعومة على هذا المتصفح')
+    if (typeof window.Notification === 'undefined' || !('serviceWorker' in navigator) || !window.isSecureContext) {
+      notify('الإشعارات تحتاج متصفحًا يدعمها واتصالًا آمنًا')
       return
     }
+
+    if (window.top !== window.self) {
+      notify('افتح مساحتنا في تبويب مستقل ثم أعد تفعيل الإشعارات')
+      return
+    }
+
     try {
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
-        notify('ما تم السماح بالإشعارات')
+        notify(
+          permission === 'denied'
+            ? 'إشعارات هذا الموقع محظورة في إعدادات المتصفح. اسمح بها ثم أعد المحاولة'
+            : 'لم تسمح للمتصفح بإرسال الإشعارات',
+        )
         return
       }
-      const registration =
-        (await navigator.serviceWorker.getRegistration('/')) ??
-        (await navigator.serviceWorker.register('/sw.js'))
+
+      const messaging = await getMessagingIfSupported()
+      if (!messaging) {
+        notify('خدمة الإشعارات غير متاحة في هذا المتصفح')
+        return
+      }
+
+      const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      await navigator.serviceWorker.ready
       const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration })
       if (!token) {
         notify('تعذر تفعيل الإشعارات، حاول مرة ثانية')
         return
       }
-      const nextTokens = { ...stateRef.current.tokens, [stateRef.current.currentUser]: token }
+
+      const partner = stateRef.current.currentUser
+      const nextTokens = { ...stateRef.current.tokens, [partner]: token }
+      await setDoc(docRef, { tokens: nextTokens }, { merge: true })
+      stateRef.current = { ...stateRef.current, tokens: nextTokens }
       setTokens(nextTokens)
-      push({ tokens: nextTokens })
       notify('تم تفعيل الإشعارات على هذا الجهاز')
-    } catch {
-      notify('صار خطأ أثناء تفعيل الإشعارات')
+    } catch (error) {
+      console.error('Notification activation failed:', error)
+      const code = getErrorCode(error)
+      if (code?.startsWith('firestore/')) {
+        notify('تم إنشاء رمز الإشعارات لكن تعذر حفظه في مساحة المزامنة. تحقق من الاتصال ثم أعد المحاولة')
+      } else if (code?.includes('service-worker')) {
+        notify('تعذر تثبيت خدمة الإشعارات. افتح التطبيق في تبويب مستقل ثم أعد المحاولة')
+      } else if (code?.startsWith('messaging/')) {
+        notify(`تعذر تسجيل هذا الجهاز لدى Firebase (${code})`)
+      } else {
+        notify('تعذر تفعيل الإشعارات. أعد المحاولة؛ سُجّل سبب الخطأ في سجل المتصفح')
+      }
     }
-  }, [notify, push])
+  }, [notify])
 
   const value = useMemo<Store>(
     () => ({
