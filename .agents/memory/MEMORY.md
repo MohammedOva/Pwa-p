@@ -1,3 +1,4 @@
 - [Next.js package firewall](next-package-firewall.md) — when a pinned release is blocked, check the latest version and retry without bypassing the firewall.
 - [Masahatna access choice](masahatna-access-choice.md) — keep the app without sign-in and leave Firestore rules unchanged unless the user asks again.
 - [Masahatna Firebase Functions builds](firebase-functions-pnpm-builds.md) — remote pnpm requires explicit Functions Framework and current build-script approval; retain the 24-hour package policy.
+- [Masahatna FCM diagnostics](masahatna-fcm-diagnostics.md) — Cloud Function send logs do not capture browser token-registration errors; route web diagnostics outside `/api`.

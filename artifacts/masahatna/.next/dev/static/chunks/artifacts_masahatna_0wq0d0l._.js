@@ -2251,6 +2251,20 @@ function getErrorCode(error) {
     if (typeof error !== 'object' || error === null || !('code' in error)) return undefined;
     return typeof error.code === 'string' ? error.code : undefined;
 }
+function reportNotificationDiagnostic(stage, code) {
+    void fetch('/notification-diagnostics', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            stage,
+            code
+        })
+    }).catch(()=>{
+    // Diagnostic reporting must never hide the original activation error.
+    });
+}
 function CoupleProvider({ children }) {
     _s();
     const [currentUser, setCurrentUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$8_$40$types$2b$node$40$25$2e$9$2e$6_react$2d$dom$40$19$2e$1$2e$0_react$40$19$2e$1$2e$0_$5f$react$40$19$2e$1$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('Moe');
@@ -2495,26 +2509,34 @@ function CoupleProvider({ children }) {
                 notify('افتح مساحتنا في تبويب مستقل ثم أعد تفعيل الإشعارات');
                 return;
             }
+            let stage = 'permission-request';
             try {
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') {
+                    reportNotificationDiagnostic('permission-result', permission);
                     notify(permission === 'denied' ? 'إشعارات هذا الموقع محظورة في إعدادات المتصفح. اسمح بها ثم أعد المحاولة' : 'لم تسمح للمتصفح بإرسال الإشعارات');
                     return;
                 }
+                stage = 'messaging-support';
                 const messaging = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$artifacts$2f$masahatna$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getMessagingIfSupported"])();
                 if (!messaging) {
+                    reportNotificationDiagnostic(stage, 'unsupported');
                     notify('خدمة الإشعارات غير متاحة في هذا المتصفح');
                     return;
                 }
+                stage = 'service-worker-register';
                 const registration = await navigator.serviceWorker.register('/sw.js', {
                     scope: '/'
                 });
+                stage = 'service-worker-ready';
                 await navigator.serviceWorker.ready;
+                stage = 'token-request';
                 const token = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f40$firebase$2b$messaging$40$0$2e$12$2e$12_$40$firebase$2b$app$40$0$2e$10$2e$13$2f$node_modules$2f40$firebase$2f$messaging$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getToken"])(messaging, {
                     vapidKey: __TURBOPACK__imported__module__$5b$project$5d2f$artifacts$2f$masahatna$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["VAPID_KEY"],
                     serviceWorkerRegistration: registration
                 });
                 if (!token) {
+                    reportNotificationDiagnostic(stage, 'empty-token');
                     notify('تعذر تفعيل الإشعارات، حاول مرة ثانية');
                     return;
                 }
@@ -2523,6 +2545,7 @@ function CoupleProvider({ children }) {
                     ...stateRef.current.tokens,
                     [partner]: token
                 };
+                stage = 'firestore-save';
                 await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f40$firebase$2b$firestore$40$4$2e$7$2e$3_$40$firebase$2b$app$40$0$2e$10$2e$13$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(docRef, {
                     tokens: nextTokens
                 }, {
@@ -2536,15 +2559,16 @@ function CoupleProvider({ children }) {
                 notify('تم تفعيل الإشعارات على هذا الجهاز');
             } catch (error) {
                 console.error('Notification activation failed:', error);
-                const code = getErrorCode(error);
+                const code = getErrorCode(error) ?? (error instanceof Error ? error.name : 'unknown');
+                reportNotificationDiagnostic(stage, code);
                 if (code?.startsWith('firestore/')) {
-                    notify('تم إنشاء رمز الإشعارات لكن تعذر حفظه في مساحة المزامنة. تحقق من الاتصال ثم أعد المحاولة');
+                    notify(`تعذر حفظ رمز الإشعارات في Firestore (${stage}: ${code})`);
                 } else if (code?.includes('service-worker')) {
-                    notify('تعذر تثبيت خدمة الإشعارات. افتح التطبيق في تبويب مستقل ثم أعد المحاولة');
+                    notify(`تعذر تثبيت خدمة الإشعارات (${stage}: ${code})`);
                 } else if (code?.startsWith('messaging/')) {
-                    notify(`تعذر تسجيل هذا الجهاز لدى Firebase (${code})`);
+                    notify(`تعذر تسجيل هذا الجهاز لدى Firebase (${stage}: ${code})`);
                 } else {
-                    notify('تعذر تفعيل الإشعارات. أعد المحاولة؛ سُجّل سبب الخطأ في سجل المتصفح');
+                    notify(`تعذر تفعيل الإشعارات (${stage}: ${code})`);
                 }
             }
         }
@@ -2747,7 +2771,7 @@ function CoupleProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/artifacts/masahatna/lib/couple-store.tsx",
-        lineNumber: 459,
+        lineNumber: 479,
         columnNumber: 10
     }, this);
 }

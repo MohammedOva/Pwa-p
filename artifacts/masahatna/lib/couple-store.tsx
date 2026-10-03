@@ -118,6 +118,16 @@ function getErrorCode(error: unknown): string | undefined {
   return typeof error.code === 'string' ? error.code : undefined
 }
 
+function reportNotificationDiagnostic(stage: string, code: string) {
+  void fetch('/notification-diagnostics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stage, code }),
+  }).catch(() => {
+    // Diagnostic reporting must never hide the original activation error.
+  })
+}
+
 export function CoupleProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<Partner>('Moe')
   const [moods, setMoods] = useState<Record<Partner, MoodEntry>>(DEFAULT_MOODS)
@@ -282,9 +292,11 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
       return
     }
 
+    let stage = 'permission-request'
     try {
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
+        reportNotificationDiagnostic('permission-result', permission)
         notify(
           permission === 'denied'
             ? 'إشعارات هذا الموقع محظورة في إعدادات المتصفح. اسمح بها ثم أعد المحاولة'
@@ -293,37 +305,45 @@ export function CoupleProvider({ children }: { children: ReactNode }) {
         return
       }
 
+      stage = 'messaging-support'
       const messaging = await getMessagingIfSupported()
       if (!messaging) {
+        reportNotificationDiagnostic(stage, 'unsupported')
         notify('خدمة الإشعارات غير متاحة في هذا المتصفح')
         return
       }
 
+      stage = 'service-worker-register'
       const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      stage = 'service-worker-ready'
       await navigator.serviceWorker.ready
+      stage = 'token-request'
       const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration })
       if (!token) {
+        reportNotificationDiagnostic(stage, 'empty-token')
         notify('تعذر تفعيل الإشعارات، حاول مرة ثانية')
         return
       }
 
       const partner = stateRef.current.currentUser
       const nextTokens = { ...stateRef.current.tokens, [partner]: token }
+      stage = 'firestore-save'
       await setDoc(docRef, { tokens: nextTokens }, { merge: true })
       stateRef.current = { ...stateRef.current, tokens: nextTokens }
       setTokens(nextTokens)
       notify('تم تفعيل الإشعارات على هذا الجهاز')
     } catch (error) {
       console.error('Notification activation failed:', error)
-      const code = getErrorCode(error)
+      const code = getErrorCode(error) ?? (error instanceof Error ? error.name : 'unknown')
+      reportNotificationDiagnostic(stage, code)
       if (code?.startsWith('firestore/')) {
-        notify('تم إنشاء رمز الإشعارات لكن تعذر حفظه في مساحة المزامنة. تحقق من الاتصال ثم أعد المحاولة')
+        notify(`تعذر حفظ رمز الإشعارات في Firestore (${stage}: ${code})`)
       } else if (code?.includes('service-worker')) {
-        notify('تعذر تثبيت خدمة الإشعارات. افتح التطبيق في تبويب مستقل ثم أعد المحاولة')
+        notify(`تعذر تثبيت خدمة الإشعارات (${stage}: ${code})`)
       } else if (code?.startsWith('messaging/')) {
-        notify(`تعذر تسجيل هذا الجهاز لدى Firebase (${code})`)
+        notify(`تعذر تسجيل هذا الجهاز لدى Firebase (${stage}: ${code})`)
       } else {
-        notify('تعذر تفعيل الإشعارات. أعد المحاولة؛ سُجّل سبب الخطأ في سجل المتصفح')
+        notify(`تعذر تفعيل الإشعارات (${stage}: ${code})`)
       }
     }
   }, [notify])
